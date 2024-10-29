@@ -1,0 +1,109 @@
+OCAML:
+
+1. Write two versions, one non-tail-recursive and the other tail-recursive, of the function.
+   The function takes as arguments an element x (of any type) and a non-negative integer n,
+   and returns a list of n entries all identical to x. If the function is called with a negative n,
+   an exception is thrown. 
+
+  Non-tail-recursive version: 
+
+    let rec replicate_non_tail x n =
+      if n < 0 then raise (Invalid_argument "Negative count")
+      else if n = 0 then []
+      else x :: replicate_non_tail x (n - 1);;
+
+  Tail-recursive version: 
+
+    let replicate_tail x n =
+      if n < 0 then raise (Invalid_argument "Negative count")
+      else
+        let rec aux acc x n =
+          if n = 0 then acc
+          else aux (x :: acc) x (n - 1)
+        in List.rev (aux [] x n);;
+
+3. Write two versions, one non-tail-recursive and the other tail-recursive, of the function.
+   The function takes as argument a list, and returns the reversed list.
+
+  Non-tail-recursive version:
+
+    let rec reverse_non_tail lst =
+      match lst with
+      | [] -> []
+      | h :: t -> (reverse_non_tail t) @ [h];;
+
+  Tail-recursive version: 
+
+    let reverse_tail lst =
+      let rec aux acc = function
+        | [] -> acc
+        | h :: t -> aux (h :: acc) t
+      in aux [] lst;;
+
+5.  Write a function that returns a list of the nodes of a binary tree, in in-order traversal
+   (that is, left subtree – node – right subtree).
+
+    type 'a btree =
+      | Empty
+      | Leaf of 'a
+      | Node of ('a * 'a btree * 'a btree);;
+
+    let rec inorder tree =
+      match tree with
+      | Empty -> []
+      | Leaf v -> [v]
+      | Node (v, left, right) -> (inorder left) @ [v] @ (inorder right);;
+
+
+LAMBDA CALCULUS:
+
+7. Expression:
+   (λt. λu. u t t) (λx. x) t 
+
+  Step-by-step reduction:
+
+    1. Substitute (λx. x) for t in (λt. λu. u t t)
+    = λu. u (λx. x) (λx. x)
+
+    2. Substitute t for u in u (λx. x) (λx. x)
+    = t (λx. x) (λx. x)
+
+9. Expression:
+   (λx. x x) (λx. y) 
+
+  Step-by-step reduction:
+
+    1. Substitute (λx. y) for x in x x
+    = (λx. y) (λx. y)
+
+    2. Substitute y for x in the body of λx. y
+    = y
+
+
+HASKELL:
+
+11. Write the Haskell type of a function that returns a list of integers when given an integer argument.
+
+  intToIntList :: Int -> [Int]
+
+12. Write a Haskell function that produces the list of the divisors of a given positive integer.
+
+  divisors :: Int -> [Int]
+  divisors n = [d | d <- [1..n], n `mod` d == 0]
+
+13. Using your function of 12 above, write a Haskell function isPrime, from Int to Bool, that returns
+True exactly when the argument is a prime number. Recall that n is prime exactly when its list of divisors is [1, n].
+
+  isPrime :: Int -> Bool
+  isPrime n = divisors n == [1, n]
+
+14. Define the (infinite) list of prime numbers, using your isPrime function of 13 above.
+Note that this is not to be the way I defined the list of primes in my slides.
+
+  primes :: [Int]
+  primes = filter isPrime [2..]
+
+15. Show the 2000th prime number, using your list of 14 above.
+
+  twoThousandthPrime :: Int
+  twoThousandthPrime = primes !! 1999
