@@ -1,62 +1,171 @@
-OCAML:
+Assignment 2: OCAML, Lambda Calculus, Haskell
+Group: Stephanie Myalik, Erik Vodanovic
+
+(* OCAML: *)
 
 1. Write two versions, one non-tail-recursive and the other tail-recursive, of the function.
    The function takes as arguments an element x (of any type) and a non-negative integer n,
    and returns a list of n entries all identical to x. If the function is called with a negative n,
    an exception is thrown. 
+Author: Stephanie Myalik
 
-  Non-tail-recursive version: 
+        Non-tail-recursive version: 
 
-    let rec replicate_non_tail x n =
-      if n < 0 then raise (Invalid_argument "Negative count")
-      else if n = 0 then []
-      else x :: replicate_non_tail x (n - 1);;
+          let rec replicate_non_tail x n =
+            if n < 0 then raise (Invalid_argument "Negative count")
+            else if n = 0 then []
+            else x :: replicate_non_tail x (n - 1);;
 
-  Tail-recursive version: 
+          (* Example usage *)
+            let list1 = replicate_non_tail "example" 3
+            (* list1 will be ["example"; "example"; "example"] *)
 
-    let replicate_tail x n =
-      if n < 0 then raise (Invalid_argument "Negative count")
-      else
-        let rec aux acc x n =
-          if n = 0 then acc
-          else aux (x :: acc) x (n - 1)
-        in List.rev (aux [] x n);;
+        Tail-recursive version: 
+
+          let replicate_tail x n =
+            if n < 0 then raise (Invalid_argument "Negative count")
+            else
+              let rec aux acc x n =
+                if n = 0 then acc
+                else aux (x :: acc) x (n - 1)
+              in List.rev (aux [] x n);;
+
+        
+          (* Example usage *)
+          let list2 = replicate_tail 42 5
+          (* list2 will be [42; 42; 42; 42; 42] *)
+
+Question 2
+Author: Erik Vodanovic
+
+        (* Non-tail-recursive version *)
+        let rec makeList n =
+          if n < 0 then
+            raise (Invalid_argument "n must be non-negative")
+          else if n = 0 then
+            []
+          else
+            makeList (n - 1) @ [n]
+
+        (* Tail-recursive version *)
+        let makeList_tail n =
+          let rec aux n acc =
+            if n < 0 then
+              raise (Invalid_argument "n must be non-negative")
+            else if n = 0 then
+              acc
+            else
+              aux (n - 1) (n :: acc)
+          in
+          aux n []
+
+        (* Calling the non-tail-recursive version *)
+        let result1 = makeList 4
+        (* result1 will be [1; 2; 3; 4] *)
+
+        (* Calling the tail-recursive version *)
+        let result2 = makeList_tail 4
+        (* result2 will be [1; 2; 3; 4] *)
+
 
 3. Write two versions, one non-tail-recursive and the other tail-recursive, of the function.
    The function takes as argument a list, and returns the reversed list.
+Author: Stephanie Myalik
+   
+      (* Non-tail-recursive version: *)
+        let rec reverse_non_tail lst =
+          match lst with
+          | [] -> []
+          | h :: t -> (reverse_non_tail t) @ [h];;
+    
+          (* Example usage *)
+          let reversed_list1 = reverse_non_tail [1; 2; 3; 4; 5]
+          (* reversed_list1 will be [5; 4; 3; 2; 1] *)
 
-  Non-tail-recursive version:
+      (* Tail-recursive version:  *)
+        let reverse_tail lst =
+          let rec aux acc = function
+            | [] -> acc
+            | h :: t -> aux (h :: acc) t
+          in aux [] lst;;
 
-    let rec reverse_non_tail lst =
-      match lst with
-      | [] -> []
-      | h :: t -> (reverse_non_tail t) @ [h];;
+          (* Example usage *)
+          let reversed_list1 = reverse_non_tail [1; 2; 3; 4; 5]
+          (* reversed_list1 will be [5; 4; 3; 2; 1] *)
 
-  Tail-recursive version: 
+(* 
+(* Question 4
+Author: Erik Vodanovic *) *)
 
-    let reverse_tail lst =
-      let rec aux acc = function
-        | [] -> acc
-        | h :: t -> aux (h :: acc) t
-      in aux [] lst;;
+        (* Define the type for the binary tree *)
+        type 'a tree =
+          | Empty
+          | Node of 'a * 'a tree * 'a tree
+
+        (* Function to count the number of leaves in a binary tree *)
+        let rec count_leaves tree =
+          match tree with
+          | Empty -> 0
+          | Node (_, Empty, Empty) -> 1
+          | Node (_, left, right) -> count_leaves left + count_leaves right
+
+        (* Example usage *)
+        let example_tree = 
+          Node (1, 
+            Node (2, Empty, Empty), 
+            Node (3, 
+              Node (4, Empty, Empty), 
+              Empty))
+
+        let num_leaves = count_leaves example_tree
+        (* num_leaves will be 2 *)
+
 
 5.  Write a function that returns a list of the nodes of a binary tree, in in-order traversal
    (that is, left subtree – node – right subtree).
+Author: Stephanie Myalik
 
-    type 'a btree =
-      | Empty
-      | Leaf of 'a
-      | Node of ('a * 'a btree * 'a btree);;
+        type 'a btree =
+          | Empty
+          | Leaf of 'a
+          | Node of ('a * 'a btree * 'a btree);;
 
-    let rec inorder tree =
-      match tree with
-      | Empty -> []
-      | Leaf v -> [v]
-      | Node (v, left, right) -> (inorder left) @ [v] @ (inorder right);;
+        let rec inorder tree =
+          match tree with
+          | Empty -> []
+          | Leaf v -> [v]
+          | Node (v, left, right) -> (inorder left) @ [v] @ (inorder right);;
+
+
+          (* sample binary tree *)
+          let example_tree = 
+            Node (1, 
+              Node (2, Leaf 4, Leaf 5), 
+              Node (3, Empty, Leaf 6))
+
+          (* in order*)
+          let nodes_inorder = inorder example_tree
+          (* nodes_inorder will be [4; 2; 5; 1; 3; 6] *)
+
+
+Question 6
+Author: Erik Vodanovic
+
+        (* Function to perform pre-order traversal of a binary tree *)
+        let rec preorder_traversal tree =
+          match tree with
+          | Empty -> []
+          | Node (value, left, right) ->
+              [value] @ (preorder_traversal left) @ (preorder_traversal right)
+
+        (* Example usage *)
+        let preorder_list = preorder_traversal example_tree
+        (* preorder_list will be [1; 2; 3; 4] *)
 
 
 LAMBDA CALCULUS:
 
+Author: Stephanie Myalik
 7. Expression:
    (λt. λu. u t t) (λx. x) t 
 
@@ -68,6 +177,15 @@ LAMBDA CALCULUS:
     2. Substitute t for u in u (λx. x) (λx. x)
     = t (λx. x) (λx. x)
 
+
+Author: Erik Vodanovic
+question 8
+
+  The expression does not reduce to a finite form and is considered divergent.
+  (λy. y y) ((λy. y y))
+
+
+Author: Stephanie Myalik
 9. Expression:
    (λx. x x) (λx. y) 
 
@@ -79,31 +197,72 @@ LAMBDA CALCULUS:
     2. Substitute y for x in the body of λx. y
     = y
 
+    
+Author: Erik Vodanovic
+question 10
 
-HASKELL:
+(λx. t x x) (λx. t x x)
+similar to the previous one, is also divergent and does not reduce to a normal form.
+
+
+-- HASKELL:
 
 11. Write the Haskell type of a function that returns a list of integers when given an integer argument.
+Author: Stephanie Myalik
 
-  intToIntList :: Int -> [Int]
+        intToIntList :: Int -> [Int]
 
-12. Write a Haskell function that produces the list of the divisors of a given positive integer.
+question 12
+Author: Erik Vodanovic
 
-  divisors :: Int -> [Int]
-  divisors n = [d | d <- [1..n], n `mod` d == 0]
+        -- Function to produce the list of divisors of a given positive integer
+        divisors :: Int -> [Int]
+        divisors n = [x | x <- [1..n], n `mod` x == 0]
 
 13. Using your function of 12 above, write a Haskell function isPrime, from Int to Bool, that returns
 True exactly when the argument is a prime number. Recall that n is prime exactly when its list of divisors is [1, n].
+Author: Stephanie Myalik
 
-  isPrime :: Int -> Bool
-  isPrime n = divisors n == [1, n]
+        isPrime :: Int -> Bool
+        isPrime n = divisors n == [1, n]
 
-14. Define the (infinite) list of prime numbers, using your isPrime function of 13 above.
-Note that this is not to be the way I defined the list of primes in my slides.
+question 14
+Author: Erik Vodanovic
 
-  primes :: [Int]
-  primes = filter isPrime [2..]
+        -- Function to check if a number is prime
+        isPrime :: Int -> Bool
+        isPrime n
+          | n < 2     = False
+          | otherwise = null [x | x <- [2..(n-1)], n `mod` x == 0]
+
+        -- Infinite list of prime numbers
+        primes :: [Int]
+        primes = [x | x <- [2..], isPrime x]
+
 
 15. Show the 2000th prime number, using your list of 14 above.
+Author: Stephanie Myalik
 
-  twoThousandthPrime :: Int
-  twoThousandthPrime = primes !! 1999
+        -- Get the 2000th prime number
+        twoThousandthPrime :: Int
+        twoThousandthPrime = primes !! 1999
+
+question 16
+Author: Erik Vodanovic
+
+        -- Function to check if a number is perfect
+          isPerfect :: Int -> Bool
+          isPerfect n = sum (init (divisors n)) == n
+          
+          -- Function to produce the list of all perfect numbers up to a given integer
+          perfs :: Int -> [Int]
+          perfs m = [x | x <- [1..m], isPerfect x]
+          
+          
+          -- Example usage
+          main :: IO ()
+          main = do
+            let n = 12
+            print (divisors n)  -- Output will be [1, 2, 3, 4, 6, 12]
+            print (take 10 primes)  -- Output will be the first 10 prime numbers: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+            print (perfs 10000)  -- Output will be the list of perfect numbers up to 10000: [6, 28, 496, 8128]
