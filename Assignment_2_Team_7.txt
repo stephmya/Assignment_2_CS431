@@ -9,7 +9,7 @@ Group: Stephanie Myalik, Erik Vodanovic
    an exception is thrown. 
 Author: Stephanie Myalik
 
-        Non-tail-recursive version: 
+      (* Non-tail-recursive version: *)
 
           let rec replicate_non_tail x n =
             if n < 0 then raise (Invalid_argument "Negative count")
@@ -20,7 +20,7 @@ Author: Stephanie Myalik
             let list1 = replicate_non_tail "example" 3
             (* list1 will be ["example"; "example"; "example"] *)
 
-        Tail-recursive version: 
+       (* Tail-recursive version: *)
 
           let replicate_tail x n =
             if n < 0 then raise (Invalid_argument "Negative count")
